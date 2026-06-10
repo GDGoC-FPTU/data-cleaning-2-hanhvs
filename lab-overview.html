@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini-Lab: Data Cleaning Sprint — Tổng quan</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #273449;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-2: #f472b6;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --code-bg: #0b1220;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+  }
+  h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    color: var(--accent);
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  h2 {
+    color: var(--accent-2);
+    margin-top: 36px;
+    border-left: 4px solid var(--accent-2);
+    padding-left: 12px;
+  }
+  h3 { color: var(--accent); margin-top: 22px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .card h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .card p { margin: 0; font-size: 14px; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .badge-todo { background: var(--warn); color: #1f2937; }
+  .badge-done { background: var(--ok); color: #1f2937; }
+  .badge-bad  { background: var(--bad); color: #1f2937; }
+  pre {
+    background: var(--code-bg);
+    color: #e2e8f0;
+    padding: 14px 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    font-size: 13px;
+  }
+  code.inline {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #fcd34d;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: var(--panel-2);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  tr.dup     { background: rgba(248, 113, 113, 0.10); }
+  tr.outlier { background: rgba(251, 191, 36, 0.10); }
+  tr.negative{ background: rgba(244, 114, 182, 0.10); }
+  .tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  .tag-dup     { background: var(--bad);  color: #1f2937; }
+  .tag-outlier { background: var(--warn); color: #1f2937; }
+  .tag-neg     { background: var(--accent-2); color: #1f2937; }
+  ul.checklist { list-style: none; padding-left: 0; }
+  ul.checklist li {
+    padding: 8px 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  ul.checklist li::before {
+    content: "☐ ";
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .file-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Morning Mini-Lab: Data Cleaning Sprint</h1>
+    <div class="sub">Tổng quan công việc cần làm · GDGoC FPTU · Repo: <code class="inline">data-cleaning-2-hanhvs</code></div>
+  </header>
+
+  <h2>Mục tiêu</h2>
+  <p>
+    Làm sạch file <span class="file-pill">toxic_sample.json</span> để loại bỏ <b>PII</b>,
+    <b>bản ghi trùng lặp</b>, và <b>giá trị bất thường</b> — rồi xuất ra
+    <span class="file-pill">sanitized_sample.json</span>.
+  </p>
+
+  <h2>Cấu trúc file trong repo</h2>
+  <div class="grid">
+    <div class="card">
+      <h4>toxic_sample.json</h4>
+      <p>Dữ liệu thô (input). Có lỗi PII, trùng, outlier, giá âm.</p>
+    </div>
+    <div class="card">
+      <h4>mini-lab-data-cleaning.md</h4>
+      <p>Mô tả yêu cầu chi tiết của bài lab.</p>
+    </div>
+    <div class="card">
+      <h4>cleaning.py</h4>
+      <p><span class="badge badge-todo">TODO</span>File bạn cần hoàn thiện.</p>
+    </div>
+    <div class="card">
+      <h4>cleaning_solution.py</h4>
+      <p>File lời giải tham khảo (không nên xem trước).</p>
+    </div>
+  </div>
+
+  <h2>Dữ liệu đầu vào (toxic_sample.json)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Name (PII)</th><th>Email (PII)</th><th>Product</th><th>Price</th><th>Category</th><th>Vấn đề</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>A001</td><td>Nguyen Van A</td><td>vana@gmail.com</td><td>Laptop OLED</td><td>2500</td><td>elec</td><td>—</td></tr>
+      <tr><td>A002</td><td>Tran Thi B</td><td>bt@vinuni.edu.vn</td><td>Ergonomic Chair</td><td>300</td><td>furniture</td><td>—</td></tr>
+      <tr class="dup"><td>A001</td><td>Nguyen Van A</td><td>vana@gmail.com</td><td>Laptop OLED</td><td>2500</td><td>elec</td><td><span class="tag tag-dup">DUPLICATE</span></td></tr>
+      <tr class="outlier"><td>A003</td><td>Le Van C</td><td>levanc@sample.com</td><td>Mechanical Pencil</td><td>99999</td><td>stationary</td><td><span class="tag tag-outlier">OUTLIER &gt; 5000</span></td></tr>
+      <tr class="negative"><td>A004</td><td>Pham Van D</td><td>dpham@sample.com</td><td>Smartphone</td><td>-50</td><td>elec</td><td><span class="tag tag-neg">PRICE &lt; 0</span></td></tr>
+      <tr><td>A005</td><td>Miss Unknown</td><td>secret@xyz.com</td><td>Smartwatch</td><td>400</td><td>""</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Việc cần làm — Checklist</h2>
+
+  <h3>Challenge 1 · PII Masking <span class="sub">(0:15:00)</span></h3>
+  <ul class="checklist">
+    <li>Xoá hoàn toàn field <code class="inline">name</code> khỏi mỗi record.</li>
+    <li>Mask <code class="inline">email</code>: <code class="inline">vana@gmail.com</code> → <code class="inline">v***@gmail.com</code>.</li>
+    <li>Hoàn thiện hàm <code class="inline">mask_email(email)</code> trong <code class="inline">cleaning.py</code>.</li>
+  </ul>
+
+  <h3>Challenge 2 · Deduplication &amp; Outliers <span class="sub">(0:15:00)</span></h3>
+  <ul class="checklist">
+    <li><b>Deduplicate</b>: mỗi <code class="inline">id</code> chỉ xuất hiện một lần (dùng <code class="inline">seen_ids = set()</code>).</li>
+    <li><b>Outlier</b>: loại bỏ item có <code class="inline">price &gt; 5000</code>.</li>
+    <li><b>Sanity</b>: loại bỏ item có <code class="inline">price &lt; 0</code>.</li>
+  </ul>
+
+  <h3>Final · Verification <span class="sub">(0:10:00)</span></h3>
+  <ul class="checklist">
+    <li>Ghi kết quả ra <code class="inline">sanitized_sample.json</code> với <code class="inline">indent=4</code>.</li>
+    <li>Chạy <code class="inline">python cleaning.py</code> và kiểm tra output.</li>
+    <li>Trả lời câu hỏi thảo luận: <i>"Tại sao dùng ETL thay vì ELT cho việc mask PII?"</i></li>
+  </ul>
+
+  <h2>Các <code class="inline">TODO</code> trong cleaning.py</h2>
+  <pre><code>def mask_email(email):
+    # TODO 1: trả về dạng "v***@domain.com"
+    pass
+
+def clean_data(input_file, output_file):
+    # TODO 2: load JSON từ input_file → biến `data`
+
+    seen_ids = set()
+    sanitized_data = []
+
+    for item in data:
+        # TODO 3: nếu item['id'] đã trong seen_ids → skip
+        # TODO 4: nếu price > 5000 → skip
+        # TODO 5: nếu price < 0  → skip
+        # TODO 6: xoá field 'name'
+        # TODO 7: gọi mask_email() cho field 'email'
+
+        sanitized_data.append(item)
+        # TODO 8: seen_ids.add(item['id'])
+
+    # TODO 9: ghi sanitized_data ra output_file với indent=4
+</code></pre>
+
+  <h2>Kết quả mong đợi</h2>
+  <p>Sau khi chạy đúng, <code class="inline">sanitized_sample.json</code> chỉ còn <b>3 records</b>:</p>
+  <pre><code>[
+    { "id": "A001", "email": "v***@gmail.com",     "product": "Laptop OLED",     "price": 2500, "category": "elec" },
+    { "id": "A002", "email": "b***@vinuni.edu.vn", "product": "Ergonomic Chair", "price": 300,  "category": "furniture" },
+    { "id": "A005", "email": "s***@xyz.com",       "product": "Smartwatch",      "price": 400,  "category": "" }
+]</code></pre>
+  <p class="sub">
+    A001 (bản trùng) bị loại · A003 bị loại (price 99999 &gt; 5000) · A004 bị loại (price -50 &lt; 0).
+  </p>
+
+  <h2>Cách chạy</h2>
+  <pre><code># macOS / Linux
+python3 -m venv venv
+source venv/bin/activate
+python cleaning.py</code></pre>
+
+  <footer>
+    Sinh từ nội dung repo · Mở file này trong trình duyệt để xem tổng quan công việc.
+  </footer>
+
+</div>
+</body>
+</html>
